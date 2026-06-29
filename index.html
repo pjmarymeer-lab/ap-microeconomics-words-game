@@ -1,0 +1,1172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AP Microeconomics CED Key Concepts Game</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #30313a;
+      --muted: #777b7f;
+      --paper: #f4f1eb;
+      --panel: rgba(255, 253, 248, 0.9);
+      --line: rgba(71, 68, 64, 0.16);
+      --teal: #6f9292;
+      --green: #8fa68d;
+      --clay: #b88b76;
+      --gold: #b8a36b;
+      --lavender: #9b93aa;
+      --rose: #c39a9b;
+      --blue: #879eb5;
+      --sage: #a7ad91;
+      --shadow: 0 18px 46px rgba(75, 70, 63, 0.1);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(255, 253, 248, 0.78), rgba(244, 241, 235, 0.96)),
+        radial-gradient(circle at top left, rgba(111, 146, 146, 0.24), transparent 34%),
+        radial-gradient(circle at 88% 6%, rgba(195, 154, 155, 0.22), transparent 30%),
+        radial-gradient(circle at 72% 82%, rgba(184, 163, 107, 0.18), transparent 34%);
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    button:focus-visible {
+      outline: 3px solid rgba(44, 111, 124, 0.35);
+      outline-offset: 2px;
+    }
+
+    .app {
+      width: min(1480px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 46px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 22px;
+      align-items: end;
+      padding: 20px 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--teal);
+      font-size: 0.78rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 920px;
+      font-size: clamp(2rem, 5vw, 4.7rem);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      gap: 8px;
+      align-items: center;
+    }
+
+    .stat {
+      min-width: 96px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(255, 253, 248, 0.95), rgba(238, 232, 222, 0.86));
+      box-shadow: 0 1px 0 rgba(23, 32, 38, 0.04);
+      font-weight: 850;
+      text-align: center;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 750;
+    }
+
+    .timer-stat {
+      color: var(--teal);
+      min-width: 112px;
+      background: linear-gradient(135deg, rgba(231, 239, 236, 0.98), rgba(225, 233, 239, 0.92));
+      border-color: rgba(111, 146, 146, 0.28);
+      box-shadow: 0 10px 28px rgba(111, 146, 146, 0.13);
+    }
+
+    .timer-stat.warning {
+      color: var(--clay);
+      background: linear-gradient(180deg, rgba(239, 226, 222, 0.98), rgba(226, 205, 199, 0.9));
+      animation: timerPulse 900ms ease-in-out infinite;
+    }
+
+    .timer-stat.expired {
+      color: #fff;
+      background: linear-gradient(135deg, var(--clay), var(--lavender));
+      border-color: rgba(48, 49, 58, 0.08);
+    }
+
+    .timer-stat.expired span {
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    @keyframes timerPulse {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+    }
+
+    .unit-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 16px 0 10px;
+    }
+
+    .section-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 0 0 16px;
+    }
+
+    .unit-tab,
+    .section-tab,
+    .soft-button,
+    .mode-pill {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 253, 248, 0.78);
+      box-shadow: 0 1px 0 rgba(23, 32, 38, 0.05);
+    }
+
+    .unit-tab {
+      min-width: 172px;
+      padding: 10px 12px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .unit-tab strong {
+      display: block;
+      font-size: 0.9rem;
+    }
+
+    .unit-tab span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 750;
+    }
+
+    .unit-tab.active {
+      color: #fff;
+      background: linear-gradient(135deg, #6f9292, #9b93aa);
+      border-color: rgba(48, 49, 58, 0.08);
+    }
+
+    .unit-tab.active span { color: rgba(255, 255, 255, 0.74); }
+
+    .section-tab {
+      min-width: 136px;
+      padding: 9px 11px;
+      color: var(--ink);
+      font-weight: 850;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .section-tab span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 800;
+    }
+
+    .section-tab.active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--clay), var(--rose));
+      border-color: rgba(48, 49, 58, 0.08);
+    }
+
+    .section-tab.active span {
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    .unit-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: end;
+      margin: 18px 0 14px;
+    }
+
+    h2 {
+      margin: 0 0 9px;
+      font-size: clamp(1.35rem, 2.5vw, 2.25rem);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .subline {
+      margin: 0;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: end;
+      gap: 9px;
+    }
+
+    .soft-button,
+    .mode-pill {
+      padding: 10px 12px;
+      font-weight: 850;
+    }
+
+    .mode-pill.active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--teal), var(--blue));
+      border-color: rgba(48, 49, 58, 0.08);
+    }
+
+    .progress-track {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(23, 32, 38, 0.12);
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .progress-track span {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--sage), var(--rose), var(--gold));
+      transition: width 180ms ease;
+    }
+
+    .game-stage {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(280px, 0.82fr) minmax(380px, 1.18fr);
+      gap: 84px;
+      align-items: start;
+      overflow: visible;
+      padding-top: 4px;
+    }
+
+    .connection-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .connection-line {
+      fill: none;
+      stroke: var(--lavender);
+      stroke-width: 3.4;
+      stroke-linecap: round;
+      stroke-dasharray: 9 7;
+      filter: drop-shadow(0 3px 4px rgba(44, 111, 124, 0.18));
+      animation: drawLine 260ms ease-out both;
+    }
+
+    .connection-dot {
+      fill: #fff;
+      stroke: var(--lavender);
+      stroke-width: 3;
+    }
+
+    .column {
+      min-width: 0;
+    }
+
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: #38474e;
+      font-weight: 900;
+    }
+
+    .column-header span {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .card-grid {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      gap: 10px;
+    }
+
+    .match-card {
+      width: 100%;
+      min-height: 88px;
+      display: grid;
+      gap: 7px;
+      align-content: start;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-left: 5px solid transparent;
+      border-radius: 8px;
+      padding: 12px 13px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      transition: transform 150ms ease, border-color 150ms ease, background 150ms ease, opacity 150ms ease;
+    }
+
+    .match-card:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: rgba(111, 146, 146, 0.54);
+    }
+
+    .match-card.selected {
+      border-color: var(--teal);
+      border-left-color: var(--teal);
+      background: #e7efec;
+    }
+
+    .match-card.matched {
+      border-color: rgba(45, 132, 87, 0.42);
+      border-left-color: var(--green);
+      background: #edf7f0;
+      opacity: 0.73;
+      transform: scale(0.986);
+      cursor: default;
+    }
+
+    .tone-0 {
+      background: linear-gradient(180deg, rgba(231, 239, 236, 0.98), rgba(213, 226, 222, 0.92));
+      border-left-color: var(--teal);
+    }
+
+    .tone-1 {
+      background: linear-gradient(180deg, rgba(237, 232, 220, 0.98), rgba(224, 216, 196, 0.92));
+      border-left-color: var(--gold);
+    }
+
+    .tone-2 {
+      background: linear-gradient(180deg, rgba(239, 226, 222, 0.98), rgba(226, 205, 199, 0.92));
+      border-left-color: var(--clay);
+    }
+
+    .tone-3 {
+      background: linear-gradient(180deg, rgba(230, 227, 237, 0.98), rgba(213, 208, 224, 0.92));
+      border-left-color: var(--lavender);
+    }
+
+    .tone-4 {
+      background: linear-gradient(180deg, rgba(225, 233, 239, 0.98), rgba(207, 219, 229, 0.92));
+      border-left-color: var(--blue);
+    }
+
+    .tone-5 {
+      background: linear-gradient(180deg, rgba(231, 234, 219, 0.98), rgba(214, 219, 195, 0.92));
+      border-left-color: var(--sage);
+    }
+
+    .tone-6 {
+      background: linear-gradient(180deg, rgba(240, 226, 227, 0.98), rgba(226, 207, 209, 0.92));
+      border-left-color: var(--rose);
+    }
+
+    .match-card:disabled {
+      cursor: default;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 850;
+    }
+
+    .term-name {
+      font-size: 1.02rem;
+      font-weight: 900;
+    }
+
+    .badge {
+      justify-self: start;
+      color: var(--clay);
+      font-size: 0.74rem;
+      font-weight: 900;
+    }
+
+    .matched .badge {
+      color: var(--green);
+    }
+
+    .complete-card {
+      min-height: 160px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 8px;
+      padding: 24px;
+      border: 1px solid rgba(143, 166, 141, 0.36);
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(231, 239, 236, 0.96), rgba(239, 226, 227, 0.86));
+      color: var(--ink);
+      box-shadow: var(--shadow);
+      text-align: center;
+      font-weight: 850;
+    }
+
+    .complete-card span {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 750;
+    }
+
+    .answer-panel {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.82);
+    }
+
+    .answer-panel h3 {
+      margin: 0 0 12px;
+      font-size: 1.12rem;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px 16px;
+      font-size: 0.92rem;
+    }
+
+    .answer-grid strong {
+      color: var(--teal);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      z-index: 20;
+      transform: translateX(-50%) translateY(80px);
+      max-width: min(420px, calc(100% - 28px));
+      padding: 15px 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(135deg, #5e6f75, #8c7f99);
+      color: #fff;
+      box-shadow: 0 18px 48px rgba(23, 32, 38, 0.22);
+      font-size: 1.08rem;
+      font-weight: 950;
+      text-align: center;
+      opacity: 0;
+      transition: transform 180ms ease, opacity 180ms ease;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      background: linear-gradient(135deg, #6f9292, #8fa68d);
+    }
+
+    .toast.error {
+      background: linear-gradient(135deg, #b88b76, #9b93aa);
+    }
+
+    .miss .match-card.selected {
+      animation: shake 190ms linear;
+    }
+
+    .hit .match-card.matched {
+      animation: popMatch 260ms ease-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      33% { transform: translateX(-5px); }
+      66% { transform: translateX(5px); }
+    }
+
+    @keyframes popMatch {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.018); }
+      100% { transform: scale(0.986); }
+    }
+
+    @keyframes drawLine {
+      from { stroke-dashoffset: 72; opacity: 0; }
+      to { stroke-dashoffset: 0; opacity: 1; }
+    }
+
+    @media (max-width: 920px) {
+      .app {
+        width: min(100% - 22px, 760px);
+        padding-top: 16px;
+      }
+
+      .topbar,
+      .unit-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .summary,
+      .controls {
+        justify-content: start;
+      }
+
+      .summary {
+        grid-template-columns: repeat(3, minmax(0, auto));
+      }
+
+      .game-stage {
+        grid-template-columns: minmax(220px, 0.86fr) minmax(290px, 1fr);
+        gap: 54px;
+        overflow-x: auto;
+        padding-bottom: 14px;
+      }
+
+      .match-card {
+        min-height: 104px;
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="topbar">
+      <div>
+        <p class="eyebrow">AP Microeconomics CED</p>
+        <h1>Key Concepts Linking Game</h1>
+      </div>
+      <div class="summary" aria-live="polite">
+        <div class="stat" id="scoreStat">0 / 0<span>matched</span></div>
+        <div class="stat timer-stat" id="timerStat">0:00<span>time</span></div>
+        <div class="stat" id="attemptStat">0<span>attempts</span></div>
+        <div class="stat" id="missStat">0<span>misses</span></div>
+      </div>
+    </section>
+
+    <nav class="unit-tabs" id="unitTabs" aria-label="Units"></nav>
+
+    <section class="unit-panel">
+      <div>
+        <h2 id="unitTitle"></h2>
+        <p class="subline" id="unitNote"></p>
+        <div class="progress-track" aria-hidden="true"><span id="progressFill"></span></div>
+      </div>
+      <div class="controls">
+        <button class="mode-pill active" type="button" id="practiceMode">Practice</button>
+        <button class="mode-pill" type="button" id="challengeMode">Challenge</button>
+        <button class="soft-button" type="button" id="musicButton">Music On</button>
+        <button class="soft-button" type="button" id="resetButton">Reset Unit</button>
+        <button class="soft-button" type="button" id="keyButton">Show Key</button>
+      </div>
+    </section>
+
+    <nav class="section-tabs" id="sectionTabs" aria-label="Unit parts"></nav>
+
+    <section class="game-stage" id="gameStage">
+      <svg class="connection-layer" id="connectionLayer" aria-hidden="true"></svg>
+      <div class="column">
+        <div class="column-header">Key Concepts <span id="conceptCount"></span></div>
+        <div class="card-grid" id="termGrid"></div>
+      </div>
+      <div class="column">
+        <div class="column-header">Explanations <span>select one match</span></div>
+        <div class="card-grid" id="definitionGrid"></div>
+      </div>
+    </section>
+
+    <section class="answer-panel" id="answerPanel" hidden></section>
+  </main>
+  <audio id="bgMusic" src="croatian-rhapsody.m4a" preload="auto" loop></audio>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script id="game-data" type="application/json">[{"unit": "Unit 1", "title": "Basic Economic Concepts", "items": [["Scarcity", "The condition in which limited resources cannot satisfy unlimited wants, making choices necessary."], ["Factors of Production", "The resources used to produce goods and services: land, labor, capital, and entrepreneurship."], ["Opportunity Cost", "The value of the next-best alternative given up when a choice is made."], ["Trade-Off", "An alternative use of scarce resources that must be sacrificed when choosing another option."], ["Economic System", "The way a society answers what to produce, how to produce, and for whom to produce."], ["Market Economy", "An economic system in which prices and voluntary exchange guide resource allocation."], ["Command Economy", "An economic system in which government planners make most allocation decisions."], ["Production Possibilities Curve", "A model showing combinations of two goods an economy can produce with available resources and technology."], ["Productive Efficiency", "Producing the maximum possible output from available resources with no avoidable waste."], ["Law of Increasing Opportunity Cost", "As more of one good is produced, the opportunity cost of producing it rises."], ["Absolute Advantage", "The ability to produce more output with the same resources than another producer."], ["Comparative Advantage", "The ability to produce a good or service at a lower opportunity cost than another producer."], ["Specialization and Trade", "Focusing on production according to comparative advantage and exchanging for other goods."], ["Marginal Analysis", "Decision-making that compares the additional benefit and additional cost of one more unit of an action."], ["Utility", "The satisfaction or usefulness a consumer receives from consuming goods or services."], ["Marginal Utility", "The additional satisfaction gained from consuming one more unit."], ["Diminishing Marginal Utility", "The principle that each additional unit consumed usually adds less extra satisfaction than the previous unit."], ["Consumer Optimization", "Choosing the combination of goods that maximizes total utility within a budget."]]}, {"unit": "Unit 2", "title": "Supply and Demand", "items": [["Demand", "The willingness and ability of consumers to buy quantities of a good at different prices."], ["Quantity Demanded", "The amount consumers are willing and able to buy at one specific price."], ["Law of Demand", "Price and quantity demanded move in opposite directions, all else equal."], ["Demand Shifter", "A non-price factor that changes demand, such as income, tastes, expectations, buyers, or related-good prices."], ["Normal Good", "A good whose demand increases when consumer income rises."], ["Inferior Good", "A good whose demand decreases when consumer income rises."], ["Substitutes", "Goods that can be used in place of each other; a higher price for one raises demand for the other."], ["Complements", "Goods used together; a higher price for one lowers demand for the other."], ["Supply", "The willingness and ability of producers to sell quantities of a good at different prices."], ["Quantity Supplied", "The amount producers are willing and able to sell at one specific price."], ["Law of Supply", "Price and quantity supplied move in the same direction, all else equal."], ["Supply Shifter", "A non-price factor that changes supply, such as input prices, technology, taxes, subsidies, expectations, or number of sellers."], ["Equilibrium", "The price and quantity where quantity demanded equals quantity supplied."], ["Shortage", "A disequilibrium condition in which quantity demanded exceeds quantity supplied."], ["Surplus", "A disequilibrium condition in which quantity supplied exceeds quantity demanded."], ["Consumer Surplus", "The difference between what buyers are willing to pay and what they actually pay."], ["Producer Surplus", "The difference between the price sellers receive and the minimum price they would accept."], ["Deadweight Loss", "Lost total surplus caused by producing less or more than the efficient quantity."], ["Price Elasticity of Demand", "A measure of how responsive quantity demanded is to a change in price."], ["Total Revenue Test", "A method for identifying demand elasticity by observing how total revenue changes when price changes."], ["Price Elasticity of Supply", "A measure of how responsive quantity supplied is to a change in price."], ["Income Elasticity of Demand", "A measure of how responsive demand is to a change in consumer income."], ["Cross-Price Elasticity", "A measure of how responsive demand for one good is to a price change in another good."], ["Price Ceiling", "A legal maximum price; if set below equilibrium, it creates a shortage."], ["Price Floor", "A legal minimum price; if set above equilibrium, it creates a surplus."], ["Excise Tax", "A per-unit tax that raises buyers' price, lowers sellers' net price, and reduces quantity."], ["Subsidy", "A government payment that lowers effective cost and encourages more production or consumption."], ["World Price", "The price of a good determined in the international market."], ["Tariff", "A tax on imports that raises domestic price and creates government revenue and deadweight loss."], ["Quota", "A legal limit on the quantity of a good that may be imported."]]}, {"unit": "Unit 3", "title": "Production, Cost, and Perfect Competition", "items": [["Production Function", "The relationship between inputs and the quantity of output a firm can produce."], ["Total Product", "The total output produced by a firm's inputs."], ["Marginal Product", "The additional output produced by one more unit of an input."], ["Average Product", "Total product divided by the quantity of input used."], ["Diminishing Marginal Returns", "The stage where marginal product falls as additional units of a variable input are added."], ["Short Run", "A period in which at least one input is fixed."], ["Long Run", "A period in which all inputs are variable and firms can enter or exit markets."], ["Fixed Cost", "A cost that does not change when output changes."], ["Variable Cost", "A cost that changes when output changes."], ["Marginal Cost", "The additional cost of producing one more unit of output."], ["Average Total Cost", "Total cost divided by output; equal to average fixed cost plus average variable cost."], ["Long-Run Average Total Cost", "A curve showing average total cost when all inputs can vary."], ["Economies of Scale", "A long-run range where average total cost falls as output increases."], ["Diseconomies of Scale", "A long-run range where average total cost rises as output increases."], ["Constant Returns to Scale", "A long-run range where average total cost stays constant as output changes."], ["Accounting Profit", "Total revenue minus explicit costs."], ["Economic Profit", "Total revenue minus explicit and implicit costs."], ["Normal Profit", "Zero economic profit; the return just sufficient to keep resources in their current use."], ["Profit-Maximizing Rule", "A firm maximizes profit by producing the quantity where marginal revenue equals marginal cost."], ["Shutdown Rule", "In the short run, a firm should shut down if price is below average variable cost."], ["Break-Even Point", "The output or price where total revenue equals total cost and economic profit is zero."], ["Perfect Competition", "A market structure with many firms, identical products, easy entry and exit, and price-taking firms."], ["Price Taker", "A firm that accepts the market price because it has no power to set price."], ["Long-Run Competitive Equilibrium", "A perfectly competitive outcome with entry or exit complete and firms earning zero economic profit."]]}, {"unit": "Unit 4", "title": "Imperfect Competition", "items": [["Imperfect Competition", "Market structures in which firms have some ability to influence price."], ["Market Power", "A firm's ability to set price above marginal cost."], ["Monopoly", "A market structure with one seller and high barriers to entry."], ["Barrier to Entry", "An obstacle that prevents or discourages new firms from entering a market."], ["Natural Monopoly", "A monopoly that arises because one firm can supply the market at lower average cost than multiple firms."], ["Monopoly Profit Maximization", "A monopolist maximizes profit where marginal revenue equals marginal cost, then charges the demand-curve price."], ["Monopoly Inefficiency", "A monopoly produces less than the socially efficient quantity and creates deadweight loss."], ["Price Discrimination", "Charging different consumers different prices for the same good based on willingness to pay."], ["Perfect Price Discrimination", "Charging each buyer the maximum price they are willing to pay, eliminating consumer surplus."], ["Monopolistic Competition", "A market structure with many firms, differentiated products, free entry, and some price-setting power."], ["Product Differentiation", "Real or perceived differences that make a firm's product distinct from competitors' products."], ["Excess Capacity", "The gap between a monopolistically competitive firm's output and the output at minimum average total cost."], ["Oligopoly", "A market structure with a few interdependent firms."], ["Interdependence", "A condition in which each firm's best action depends on rival firms' likely actions."], ["Game Theory", "The study of strategic decision-making when outcomes depend on other players' choices."], ["Payoff Matrix", "A table showing the outcomes from different combinations of players' strategies."], ["Dominant Strategy", "A strategy that gives a player the best outcome regardless of what the other player does."], ["Nash Equilibrium", "A situation in which no player has an incentive to change strategy given the other player's choice."], ["Collusion", "An agreement among firms to restrict competition, often by setting price or output."], ["Cartel", "A group of firms that coordinate to act like a monopoly."], ["Prisoner's Dilemma", "A game in which individual incentives lead players away from the cooperative outcome."]]}, {"unit": "Unit 5", "title": "Factor Markets", "items": [["Factor Market", "A market in which firms buy resources such as labor, land, or capital from households."], ["Derived Demand", "Demand for a factor that comes from demand for the good or service the factor helps produce."], ["Marginal Revenue Product", "The additional revenue generated by employing one more unit of a factor."], ["Marginal Factor Cost", "The additional cost of employing one more unit of a factor."], ["Profit-Maximizing Factor Rule", "A firm hires a factor up to the point where marginal revenue product equals marginal factor cost."], ["Competitive Labor Market", "A labor market with many firms and workers, where firms take the market wage as given."], ["Wage Taker", "A firm that can hire workers at the market wage without influencing that wage."], ["Factor Demand Shifter", "A factor that changes demand for a resource, such as product demand, productivity, output price, or other resource prices."], ["Monopsony", "A factor market with a single dominant buyer of labor or another resource."], ["Monopsony Inefficiency", "A monopsonist hires fewer workers and pays a lower wage than a competitive labor market would."]]}, {"unit": "Unit 6", "title": "Market Failure and the Role of Government", "items": [["Market Failure", "A situation in which a market fails to allocate resources efficiently on its own."], ["Socially Efficient Quantity", "The output level where marginal social benefit equals marginal social cost."], ["Marginal Private Benefit", "The extra benefit received by the consumer from one more unit."], ["Marginal Private Cost", "The extra cost paid by the producer from one more unit."], ["Marginal Social Benefit", "The total extra benefit to society from one more unit, including external benefits."], ["Marginal Social Cost", "The total extra cost to society from one more unit, including external costs."], ["Externality", "A benefit or cost from production or consumption that affects a third party."], ["Negative Externality", "An external cost that leads markets to overproduce unless corrected."], ["Positive Externality", "An external benefit that leads markets to underproduce unless corrected."], ["Corrective Tax", "A tax used to reduce output toward the socially efficient quantity when there is a negative externality."], ["Corrective Subsidy", "A subsidy used to increase output toward the socially efficient quantity when there is a positive externality."], ["Public Good", "A good that is both non-rival and non-excludable."], ["Private Good", "A good that is both rival and excludable."], ["Non-Rival", "One person's consumption does not prevent another person from consuming the same unit."], ["Non-Excludable", "People cannot easily be prevented from receiving the benefit of a good."], ["Free Rider Problem", "The incentive to benefit from a good without paying for it."], ["Lorenz Curve", "A graph showing the distribution of income or wealth in a society."], ["Gini Coefficient", "A numerical measure of income or wealth inequality, with higher values indicating more inequality."], ["Progressive Tax", "A tax that takes a larger percentage of income from high-income households."], ["Regressive Tax", "A tax that takes a larger percentage of income from low-income households."], ["Proportional Tax", "A tax that takes the same percentage of income from all households."]]}]</script>
+  <script>
+    const DATA = JSON.parse(document.getElementById("game-data").textContent);
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const state = DATA.map(() => ({ matched: new Set(), attempts: 0, misses: 0, showKey: false, failedSections: new Set(), completedSections: new Set() }));
+    const activeSection = DATA.map(() => 0);
+    let activeUnit = 0;
+    let selectedTerm = null;
+    let selectedDefinition = null;
+    let challenge = false;
+    let toastTimer = null;
+    let audioContext = null;
+    let musicOn = false;
+    let timerKey = "";
+    let timeRemaining = 0;
+    let timerInterval = null;
+    let timerExpired = false;
+    let lastSpeedWarning = null;
+    const secondsPerQuestion = 18;
+    const praiseWords = ["Excellent!", "Unbelievable!", "Great match!", "Brilliant!", "Nice work!"];
+
+    const unitTabs = document.getElementById("unitTabs");
+    const sectionTabs = document.getElementById("sectionTabs");
+    const unitTitle = document.getElementById("unitTitle");
+    const unitNote = document.getElementById("unitNote");
+    const scoreStat = document.getElementById("scoreStat");
+    const timerStat = document.getElementById("timerStat");
+    const attemptStat = document.getElementById("attemptStat");
+    const missStat = document.getElementById("missStat");
+    const progressFill = document.getElementById("progressFill");
+    const conceptCount = document.getElementById("conceptCount");
+    const termGrid = document.getElementById("termGrid");
+    const definitionGrid = document.getElementById("definitionGrid");
+    const gameStage = document.getElementById("gameStage");
+    const connectionLayer = document.getElementById("connectionLayer");
+    const answerPanel = document.getElementById("answerPanel");
+    const resetButton = document.getElementById("resetButton");
+    const keyButton = document.getElementById("keyButton");
+    const musicButton = document.getElementById("musicButton");
+    const practiceMode = document.getElementById("practiceMode");
+    const challengeMode = document.getElementById("challengeMode");
+    const toast = document.getElementById("toast");
+    const bgMusic = document.getElementById("bgMusic");
+    bgMusic.volume = 0.32;
+
+    function cardLabel(index) {
+      let n = index + 1;
+      let out = "";
+      while (n > 0) {
+        n -= 1;
+        out = alphabet[n % 26] + out;
+        n = Math.floor(n / 26);
+      }
+      return out;
+    }
+
+    function seededShuffle(items, seed) {
+      const copy = items.map((item, index) => ({ ...item, originalIndex: index }));
+      let value = seed;
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        value = (value * 9301 + 49297) % 233280;
+        const j = Math.floor((value / 233280) * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function tonePool(size, seed) {
+      const tones = Array.from({ length: size }, (_, index) => ({ tone: index % 7 }));
+      return seededShuffle(tones, seed).map((item) => item.tone);
+    }
+
+    function buildToneMaps(unitIndex, sectionIndex, sectionTerms) {
+      const termTones = tonePool(sectionTerms.length, 701 + unitIndex * 53 + sectionIndex * 17);
+      const definitionTones = tonePool(sectionTerms.length, 1701 + unitIndex * 67 + sectionIndex * 29);
+      const termToneByNumber = new Map();
+      const definitionToneByNumber = new Map();
+
+      sectionTerms.forEach((item, index) => {
+        const termTone = termTones[index];
+        let definitionTone = definitionTones[index];
+        if (definitionTone === termTone) {
+          definitionTone = (definitionTone + 1 + (index % 6)) % 7;
+        }
+        termToneByNumber.set(item.number, termTone);
+        definitionToneByNumber.set(item.number, definitionTone);
+      });
+
+      return { termToneByNumber, definitionToneByNumber };
+    }
+
+    function buildSections(terms) {
+      const count = terms.length <= 12 ? 2 : 3;
+      const size = Math.ceil(terms.length / count);
+      const sections = [];
+      for (let index = 0; index < count; index += 1) {
+        const slice = terms.slice(index * size, (index + 1) * size);
+        if (!slice.length) continue;
+        sections.push({
+          title: `Part ${index + 1}`,
+          numbers: new Set(slice.map((item) => item.number)),
+          range: `${slice[0].number}-${slice[slice.length - 1].number}`,
+        });
+      }
+      return sections;
+    }
+
+    const prepared = DATA.map((unit, unitIndex) => {
+      const terms = unit.items.map(([term, explanation], index) => ({
+        number: String(index + 1),
+        term,
+        explanation,
+      }));
+      const definitions = seededShuffle(terms, 137 + unitIndex * 41).map((item, index) => ({
+        card: cardLabel(index),
+        number: item.number,
+        explanation: item.explanation,
+      }));
+      const answerByNumber = new Map(definitions.map((item) => [item.number, item.card]));
+      return { ...unit, terms, definitions, answerByNumber, sections: buildSections(terms) };
+    });
+
+    prepared.forEach((unit, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "unit-tab";
+      button.innerHTML = `<strong>${unit.unit}</strong><span>${unit.title}</span>`;
+      button.addEventListener("click", () => {
+        activeUnit = index;
+        timerKey = "";
+        selectedTerm = null;
+        selectedDefinition = null;
+        render();
+      });
+      unitTabs.appendChild(button);
+    });
+
+    resetButton.addEventListener("click", () => {
+      state[activeUnit] = { matched: new Set(), attempts: 0, misses: 0, showKey: false, failedSections: new Set(), completedSections: new Set() };
+      activeSection[activeUnit] = 0;
+      timerKey = "";
+      selectedTerm = null;
+      selectedDefinition = null;
+      render();
+    });
+
+    keyButton.addEventListener("click", () => {
+      state[activeUnit].showKey = !state[activeUnit].showKey;
+      render();
+    });
+
+    musicButton.addEventListener("click", () => {
+      if (musicOn) {
+        stopBackgroundMusic();
+      } else {
+        startBackgroundMusic();
+      }
+    });
+
+    practiceMode.addEventListener("click", () => {
+      challenge = false;
+      render();
+    });
+
+    challengeMode.addEventListener("click", () => {
+      challenge = true;
+      state[activeUnit].showKey = false;
+      render();
+    });
+
+    function render() {
+      const unit = prepared[activeUnit];
+      const current = state[activeUnit];
+      const section = unit.sections[activeSection[activeUnit]] || unit.sections[0];
+      const total = unit.terms.length;
+      const unitMatched = current.matched.size;
+      const sectionTerms = unit.terms.filter((item) => section.numbers.has(item.number));
+      const sectionDefinitions = unit.definitions.filter((item) => section.numbers.has(item.number));
+      const tones = buildToneMaps(activeUnit, activeSection[activeUnit], sectionTerms);
+      const sectionTotal = sectionTerms.length;
+      const sectionMatched = sectionTerms.filter((item) => current.matched.has(item.number)).length;
+      const completion = sectionTotal ? Math.round((sectionMatched / sectionTotal) * 100) : 0;
+      const currentTimerKey = `${activeUnit}-${activeSection[activeUnit]}`;
+      const failed = current.failedSections.has(currentTimerKey);
+      if (timerKey !== currentTimerKey) {
+        timerKey = currentTimerKey;
+        lastSpeedWarning = null;
+        if (failed) {
+          timeRemaining = 0;
+          timerExpired = true;
+          stopCountdown();
+        } else {
+          timeRemaining = sectionTotal * secondsPerQuestion;
+          timerExpired = false;
+          startCountdown();
+        }
+      }
+
+      Array.from(unitTabs.children).forEach((button, index) => {
+        button.classList.toggle("active", index === activeUnit);
+      });
+      practiceMode.classList.toggle("active", !challenge);
+      challengeMode.classList.toggle("active", challenge);
+
+      sectionTabs.innerHTML = "";
+      unit.sections.forEach((part, index) => {
+        const partTotal = unit.terms.filter((item) => part.numbers.has(item.number)).length;
+        const partMatched = unit.terms.filter((item) => part.numbers.has(item.number) && current.matched.has(item.number)).length;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "section-tab";
+        button.classList.toggle("active", index === activeSection[activeUnit]);
+        button.innerHTML = `${part.title}<span>${partMatched}/${partTotal} matched · #${part.range}</span>`;
+        button.addEventListener("click", () => {
+          activeSection[activeUnit] = index;
+          timerKey = "";
+          selectedTerm = null;
+          selectedDefinition = null;
+          render();
+        });
+        sectionTabs.appendChild(button);
+      });
+
+      unitTitle.textContent = `${unit.unit}: ${unit.title}`;
+      unitNote.textContent = failed
+        ? `${section.title}: challenge failed. Reset the unit or move to another part.`
+        : `${section.title}: ${sectionTotal} concepts · ${formatTime(sectionTotal * secondsPerQuestion)} total. Unit progress: ${unitMatched}/${total}. Correct pairs disappear; wrong pairs stay on the board.`;
+      scoreStat.innerHTML = `${sectionMatched} / ${sectionTotal}<span>this part</span>`;
+      updateTimerDisplay();
+      attemptStat.innerHTML = `${current.attempts}<span>attempts</span>`;
+      missStat.innerHTML = `${current.misses}<span>misses</span>`;
+      progressFill.style.width = `${completion}%`;
+      conceptCount.textContent = `${sectionTotal - sectionMatched} left`;
+      keyButton.textContent = current.showKey ? "Hide Key" : "Show Key";
+      keyButton.disabled = challenge;
+
+      termGrid.innerHTML = "";
+      sectionTerms.forEach((item) => {
+        const isMatched = current.matched.has(item.number);
+        if (isMatched) return;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `match-card term-card tone-${tones.termToneByNumber.get(item.number)}`;
+        button.dataset.number = item.number;
+        button.disabled = failed;
+        button.classList.toggle("selected", selectedTerm === item.number);
+        button.innerHTML = `
+          <span class="meta">${item.number}</span>
+          <span class="term-name">${item.term}</span>
+          <span class="badge">Pick concept</span>
+        `;
+        button.addEventListener("click", () => selectTerm(item.number));
+        termGrid.appendChild(button);
+      });
+
+      definitionGrid.innerHTML = "";
+      sectionDefinitions.forEach((item) => {
+        const isMatched = current.matched.has(item.number);
+        if (isMatched) return;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `match-card definition-card tone-${tones.definitionToneByNumber.get(item.number)}`;
+        button.dataset.card = item.card;
+        button.disabled = failed;
+        button.classList.toggle("selected", selectedDefinition === item.card);
+        button.innerHTML = `
+          <span class="meta">Card ${item.card}</span>
+          <span>${item.explanation}</span>
+          <span class="badge">Pick explanation</span>
+        `;
+        button.addEventListener("click", () => selectDefinition(item.card));
+        definitionGrid.appendChild(button);
+      });
+
+      if (sectionMatched === sectionTotal) {
+        stopCountdown();
+        const lastSection = activeSection[activeUnit] === unit.sections.length - 1;
+        termGrid.innerHTML = `<div class="complete-card">${section.title} cleared.<span>${lastSection ? "Reset the unit or choose another unit." : "Move to the next part when ready."}</span></div>`;
+        definitionGrid.innerHTML = `<div class="complete-card">Nice work.<span>${unitMatched === total ? "Every CED key concept in this unit has been matched." : "This smaller set is complete."}</span></div>`;
+      } else if (failed) {
+        stopCountdown();
+        termGrid.innerHTML = `<div class="complete-card">Challenge failed.<span>Time ran out before this part was completed.</span></div>` + termGrid.innerHTML;
+        definitionGrid.innerHTML = `<div class="complete-card">Speed up next time.<span>Use Reset Unit for a clean restart.</span></div>` + definitionGrid.innerHTML;
+      }
+
+      answerPanel.hidden = !current.showKey || challenge;
+      answerPanel.innerHTML = current.showKey && !challenge ? `
+        <h3>Answer Key · ${section.title}</h3>
+        <div class="answer-grid">
+          ${sectionTerms.map((term) => `<span>${term.number}. ${term.term}</span><strong>${unit.answerByNumber.get(term.number)}</strong>`).join("")}
+        </div>
+      ` : "";
+
+      window.requestAnimationFrame(drawConnections);
+    }
+
+    function selectTerm(number) {
+      if (timerExpired) return;
+      selectedTerm = selectedTerm === number ? null : number;
+      checkPair();
+      render();
+    }
+
+    function selectDefinition(card) {
+      if (timerExpired) return;
+      selectedDefinition = selectedDefinition === card ? null : card;
+      checkPair();
+      render();
+    }
+
+    function checkPair() {
+      if (!selectedTerm || !selectedDefinition) return;
+      const unit = prepared[activeUnit];
+      const current = state[activeUnit];
+      if (current.failedSections.has(timerKey)) return;
+      const correct = unit.answerByNumber.get(selectedTerm) === selectedDefinition;
+      current.attempts += 1;
+      if (correct) {
+        current.matched.add(selectedTerm);
+        if (isCurrentPartComplete() && timeRemaining > 0 && !current.completedSections.has(timerKey)) {
+          current.completedSections.add(timerKey);
+          stopCountdown();
+          pulse("hit", "Super!", "super");
+        } else {
+          const message = praiseWords[Math.floor(Math.random() * praiseWords.length)];
+          pulse("hit", message, "success");
+        }
+      } else {
+        current.misses += 1;
+        pulse("miss", "Try again!", "error");
+      }
+      selectedTerm = null;
+      selectedDefinition = null;
+    }
+
+    function isCurrentPartComplete() {
+      const unit = prepared[activeUnit];
+      const current = state[activeUnit];
+      const section = unit.sections[activeSection[activeUnit]] || unit.sections[0];
+      return unit.terms
+        .filter((item) => section.numbers.has(item.number))
+        .every((item) => current.matched.has(item.number));
+    }
+
+    function pulse(className, message, tone) {
+      document.body.classList.add(className);
+      window.setTimeout(() => document.body.classList.remove(className), 240);
+      showToast(message, tone);
+      playFeedbackSound(tone, message);
+    }
+
+    function showToast(message, tone) {
+      window.clearTimeout(toastTimer);
+      toast.textContent = message;
+      toast.classList.toggle("success", tone === "success" || tone === "super");
+      toast.classList.toggle("error", tone === "error" || tone === "fail");
+      toast.classList.add("show");
+      toastTimer = window.setTimeout(() => toast.classList.remove("show"), tone === "fail" || tone === "super" ? 1500 : 1000);
+    }
+
+    function startCountdown() {
+      stopCountdown();
+      updateTimerDisplay();
+      timerInterval = window.setInterval(() => {
+        timeRemaining = Math.max(0, timeRemaining - 1);
+        updateTimerDisplay();
+        if (timeRemaining > 0 && timeRemaining <= 10 && timeRemaining % 2 === 0 && lastSpeedWarning !== timeRemaining) {
+          lastSpeedWarning = timeRemaining;
+          playSpeedUpSound();
+          showToast("Speed up!", "error");
+        }
+        if (timeRemaining === 0) {
+          stopCountdown();
+          if (!timerExpired) {
+            failCurrentPart();
+          }
+        }
+      }, 1000);
+    }
+
+    function failCurrentPart() {
+      const unit = prepared[activeUnit];
+      const current = state[activeUnit];
+      const section = unit.sections[activeSection[activeUnit]] || unit.sections[0];
+      const sectionTerms = unit.terms.filter((item) => section.numbers.has(item.number));
+      const sectionMatched = sectionTerms.filter((item) => current.matched.has(item.number)).length;
+      if (sectionMatched === sectionTerms.length) return;
+      timerExpired = true;
+      current.failedSections.add(`${activeUnit}-${activeSection[activeUnit]}`);
+      selectedTerm = null;
+      selectedDefinition = null;
+      pulse("miss", "Challenge failed!", "fail");
+      render();
+    }
+
+    function stopCountdown() {
+      window.clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    function updateTimerDisplay() {
+      timerStat.innerHTML = `${formatTime(timeRemaining)}<span>time</span>`;
+      timerStat.classList.toggle("warning", timeRemaining > 0 && timeRemaining <= 20);
+      timerStat.classList.toggle("expired", timeRemaining === 0);
+    }
+
+    function formatTime(totalSeconds) {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = String(totalSeconds % 60).padStart(2, "0");
+      return `${minutes}:${seconds}`;
+    }
+
+    function getAudioContext() {
+      const AudioCtor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtor) return null;
+      if (!audioContext) audioContext = new AudioCtor();
+      if (audioContext.state === "suspended") audioContext.resume();
+      return audioContext;
+    }
+
+    function playFeedbackSound(tone, message) {
+      const context = getAudioContext();
+      if (context) {
+        if (tone === "super") {
+          playTone(context, 523.25, 0.00, 0.10, "triangle", 0.085);
+          playTone(context, 659.25, 0.08, 0.10, "triangle", 0.085);
+          playTone(context, 783.99, 0.16, 0.12, "sine", 0.085);
+          playTone(context, 1046.5, 0.27, 0.22, "triangle", 0.08);
+          playTone(context, 1318.51, 0.37, 0.24, "sine", 0.065);
+        } else if (tone === "success") {
+          playTone(context, 523.25, 0.00, 0.11, "sine", 0.08);
+          playTone(context, 659.25, 0.09, 0.12, "sine", 0.08);
+          playTone(context, 783.99, 0.18, 0.18, "triangle", 0.075);
+        } else if (tone === "fail") {
+          playTone(context, 330, 0.00, 0.11, "square", 0.07);
+          playTone(context, 247, 0.10, 0.12, "square", 0.07);
+          playTone(context, 196, 0.21, 0.18, "sawtooth", 0.065);
+        } else {
+          playTone(context, 220, 0.00, 0.12, "sawtooth", 0.055);
+          playTone(context, 164.81, 0.11, 0.16, "sawtooth", 0.05);
+        }
+      }
+      speakFeedback(message, tone);
+    }
+
+    function playSpeedUpSound() {
+      const context = getAudioContext();
+      if (!context) return;
+      playTone(context, 880, 0, 0.055, "square", 0.035);
+      playTone(context, 1174.66, 0.075, 0.055, "square", 0.035);
+    }
+
+    function startBackgroundMusic() {
+      getAudioContext();
+      musicOn = true;
+      musicButton.textContent = "Music Off";
+      musicButton.classList.add("active");
+      bgMusic.play().catch(() => {
+        musicOn = false;
+        musicButton.textContent = "Music On";
+        musicButton.classList.remove("active");
+        showToast("Tap Music On again.", "error");
+      });
+    }
+
+    function stopBackgroundMusic() {
+      musicOn = false;
+      musicButton.textContent = "Music On";
+      musicButton.classList.remove("active");
+      bgMusic.pause();
+    }
+
+    function playTone(context, frequency, delay, duration, type, volume) {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      const start = context.currentTime + delay;
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, start);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(volume, start + 0.018);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start(start);
+      oscillator.stop(start + duration + 0.03);
+    }
+
+    function speakFeedback(message, tone) {
+      if (!("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(message.replace("!", ""));
+      utterance.lang = "en-US";
+      utterance.rate = tone === "success" ? 1.05 : 0.95;
+      utterance.pitch = tone === "success" ? 1.18 : 0.82;
+      utterance.volume = 0.75;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function drawConnections() {
+      const unit = prepared[activeUnit];
+      const current = state[activeUnit];
+      const section = unit.sections[activeSection[activeUnit]] || unit.sections[0];
+      const rect = gameStage.getBoundingClientRect();
+      const width = Math.max(gameStage.clientWidth, gameStage.scrollWidth);
+      const height = Math.max(gameStage.clientHeight, gameStage.scrollHeight);
+      connectionLayer.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      connectionLayer.style.width = `${width}px`;
+      connectionLayer.style.height = `${height}px`;
+      connectionLayer.innerHTML = "";
+
+      unit.terms.forEach((term) => {
+        if (!section.numbers.has(term.number)) return;
+        if (!current.matched.has(term.number)) return;
+        const termEl = termGrid.querySelector(`[data-number="${CSS.escape(term.number)}"]`);
+        const definitionEl = definitionGrid.querySelector(`[data-card="${CSS.escape(unit.answerByNumber.get(term.number))}"]`);
+        if (!termEl || !definitionEl) return;
+
+        const start = anchor(termEl.getBoundingClientRect(), rect, "right");
+        const end = anchor(definitionEl.getBoundingClientRect(), rect, "left");
+        const bend = Math.max(44, Math.abs(end.x - start.x) * 0.42);
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", `M ${start.x} ${start.y} C ${start.x + bend} ${start.y}, ${end.x - bend} ${end.y}, ${end.x} ${end.y}`);
+        path.setAttribute("class", "connection-line");
+        connectionLayer.append(path, dot(start), dot(end));
+      });
+    }
+
+    function anchor(box, container, side) {
+      return {
+        x: side === "right" ? box.right - container.left : box.left - container.left,
+        y: box.top - container.top + box.height / 2,
+      };
+    }
+
+    function dot(point) {
+      const node = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      node.setAttribute("cx", point.x);
+      node.setAttribute("cy", point.y);
+      node.setAttribute("r", "4.5");
+      node.setAttribute("class", "connection-dot");
+      return node;
+    }
+
+    window.addEventListener("resize", drawConnections);
+    render();
+  </script>
+</body>
+</html>
