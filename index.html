@@ -87,7 +87,7 @@
 
     .summary {
       display: grid;
-      grid-template-columns: repeat(3, auto);
+      grid-template-columns: repeat(4, auto);
       gap: 8px;
       align-items: center;
     }
@@ -256,6 +256,12 @@
     .mode-pill.active {
       color: #fff;
       background: linear-gradient(135deg, var(--teal), var(--blue));
+      border-color: rgba(48, 49, 58, 0.08);
+    }
+
+    .soft-button.active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--clay), var(--lavender));
       border-color: rgba(48, 49, 58, 0.08);
     }
 
@@ -429,6 +435,29 @@
       font-weight: 900;
     }
 
+    .choice-tag {
+      justify-self: start;
+      border: 1px solid rgba(111, 146, 146, 0.28);
+      border-radius: 999px;
+      padding: 3px 8px;
+      background: rgba(255, 255, 255, 0.5);
+      color: var(--teal);
+      font-size: 0.74rem;
+      font-weight: 900;
+    }
+
+    .match-card.correct-review {
+      border-color: rgba(143, 166, 141, 0.52);
+      border-left-color: var(--green);
+      background: linear-gradient(180deg, rgba(231, 239, 236, 0.98), rgba(214, 230, 216, 0.92));
+    }
+
+    .match-card.wrong-review {
+      border-color: rgba(184, 139, 118, 0.52);
+      border-left-color: var(--clay);
+      background: linear-gradient(180deg, rgba(240, 226, 227, 0.98), rgba(232, 214, 207, 0.92));
+    }
+
     .matched .badge {
       color: var(--green);
     }
@@ -477,6 +506,53 @@
 
     .answer-grid strong {
       color: var(--teal);
+    }
+
+    .review-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 14px;
+    }
+
+    .result-summary {
+      display: grid;
+      gap: 8px;
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .explanation-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .explanation-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: rgba(255, 253, 248, 0.72);
+    }
+
+    .explanation-item.correct {
+      border-left: 5px solid var(--green);
+    }
+
+    .explanation-item.wrong {
+      border-left: 5px solid var(--clay);
+    }
+
+    .explanation-item strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .explanation-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 750;
     }
 
     .toast {
@@ -554,7 +630,7 @@
       }
 
       .summary {
-        grid-template-columns: repeat(3, minmax(0, auto));
+        grid-template-columns: repeat(2, minmax(0, auto));
       }
 
       .game-stage {
@@ -597,6 +673,9 @@
       <div class="controls">
         <button class="mode-pill active" type="button" id="practiceMode">Practice</button>
         <button class="mode-pill" type="button" id="challengeMode">Challenge</button>
+        <button class="soft-button" type="button" id="wrongReviewButton">Wrong Review</button>
+        <button class="soft-button" type="button" id="unitRandomButton">Unit Random</button>
+        <button class="soft-button" type="button" id="allRandomButton">All Random</button>
         <button class="soft-button" type="button" id="musicButton">Music On</button>
         <button class="soft-button" type="button" id="resetButton">Reset Unit</button>
         <button class="soft-button" type="button" id="keyButton">Show Key</button>
@@ -641,7 +720,15 @@
     let timerExpired = false;
     let lastSpeedWarning = null;
     const secondsPerQuestion = 18;
+    const quizSecondsPerQuestion = 20;
+    const wrongStorageKey = "apMicroWrongConceptsV1";
     const praiseWords = ["Excellent!", "Unbelievable!", "Great match!", "Brilliant!", "Nice work!"];
+    const activity = {
+      mode: "link",
+      quiz: null,
+    };
+    let selectedQuizTerm = null;
+    let wrongBank = loadWrongBank();
 
     const unitTabs = document.getElementById("unitTabs");
     const sectionTabs = document.getElementById("sectionTabs");
@@ -663,6 +750,9 @@
     const musicButton = document.getElementById("musicButton");
     const practiceMode = document.getElementById("practiceMode");
     const challengeMode = document.getElementById("challengeMode");
+    const wrongReviewButton = document.getElementById("wrongReviewButton");
+    const unitRandomButton = document.getElementById("unitRandomButton");
+    const allRandomButton = document.getElementById("allRandomButton");
     const toast = document.getElementById("toast");
     const bgMusic = document.getElementById("bgMusic");
     bgMusic.volume = 0.32;
@@ -729,11 +819,161 @@
       return sections;
     }
 
+    function conceptKey(unitIndex, number) {
+      return `u${unitIndex + 1}-${number}`;
+    }
+
+    function loadWrongBank() {
+      try {
+        return JSON.parse(window.localStorage.getItem(wrongStorageKey) || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function saveWrongBank() {
+      window.localStorage.setItem(wrongStorageKey, JSON.stringify(wrongBank));
+      updateWrongReviewButton();
+    }
+
+    function wrongCount() {
+      return Object.keys(wrongBank).length;
+    }
+
+    function recordWrong(item) {
+      const existing = wrongBank[item.key] || {};
+      wrongBank[item.key] = {
+        unitIndex: item.unitIndex,
+        number: item.number,
+        term: item.term,
+        explanation: item.explanation,
+        unit: item.unit,
+        unitTitle: item.unitTitle,
+        misses: (existing.misses || 0) + 1,
+        lastMissed: Date.now(),
+      };
+      saveWrongBank();
+    }
+
+    function clearWrong(key) {
+      if (!wrongBank[key]) return;
+      delete wrongBank[key];
+      saveWrongBank();
+    }
+
+    function allConcepts() {
+      return prepared.flatMap((unit) => unit.terms);
+    }
+
+    function randomShuffle(items) {
+      const copy = items.slice();
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function uniqueByKey(items) {
+      const seen = new Set();
+      return items.filter((item) => {
+        if (seen.has(item.key)) return false;
+        seen.add(item.key);
+        return true;
+      });
+    }
+
+    function pickUnitRandom(unitIndex) {
+      const unit = prepared[unitIndex];
+      const target = Math.min(10, unit.terms.length);
+      const picked = [];
+      unit.sections.forEach((section) => {
+        const pool = unit.terms.filter((item) => section.numbers.has(item.number));
+        const choice = randomShuffle(pool)[0];
+        if (choice) picked.push(choice);
+      });
+      const remaining = randomShuffle(unit.terms.filter((item) => !picked.some((pickedItem) => pickedItem.key === item.key)));
+      return uniqueByKey([...picked, ...remaining]).slice(0, target);
+    }
+
+    function pickAllRandom() {
+      const target = Math.min(36, allConcepts().length);
+      const picked = prepared.map((unit) => randomShuffle(unit.terms)[0]).filter(Boolean);
+      const remaining = randomShuffle(allConcepts().filter((item) => !picked.some((pickedItem) => pickedItem.key === item.key)));
+      return uniqueByKey([...picked, ...remaining]).slice(0, target);
+    }
+
+    function wrongItems() {
+      return Object.values(wrongBank)
+        .sort((a, b) => (b.lastMissed || 0) - (a.lastMissed || 0))
+        .map((record) => prepared[record.unitIndex]?.terms.find((item) => item.number === record.number))
+        .filter(Boolean);
+    }
+
+    function updateWrongReviewButton() {
+      wrongReviewButton.textContent = `Wrong Review (${wrongCount()})`;
+    }
+
+    function buildQuiz(kind, title, note, items) {
+      const quizItems = items.map((item, index) => ({
+        ...item,
+        quizNumber: String(index + 1),
+      }));
+      const definitions = randomShuffle(quizItems).map((item, index) => ({
+        card: cardLabel(index),
+        key: item.key,
+        explanation: item.explanation,
+      }));
+      return {
+        id: `${kind}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        kind,
+        title,
+        note,
+        items: quizItems,
+        definitions,
+        answerByKey: new Map(definitions.map((item) => [item.key, item.card])),
+        selectedByKey: new Map(),
+        submitted: false,
+        timedOut: false,
+        showWrongOnly: true,
+        timeLimit: Math.max(quizItems.length * quizSecondsPerQuestion, 60),
+      };
+    }
+
+    function startQuiz(kind, title, note, items) {
+      if (!items.length) {
+        showToast("No saved wrong answers yet.", "error");
+        return;
+      }
+      activity.mode = "quiz";
+      activity.quiz = buildQuiz(kind, title, note, items);
+      selectedQuizTerm = null;
+      selectedTerm = null;
+      selectedDefinition = null;
+      timerKey = "";
+      timerExpired = false;
+      challenge = true;
+      render();
+    }
+
     const prepared = DATA.map((unit, unitIndex) => {
-      const terms = unit.items.map(([term, explanation], index) => ({
+      const baseTerms = unit.items.map(([term, explanation], index) => ({
+        unitIndex,
+        key: conceptKey(unitIndex, String(index + 1)),
         number: String(index + 1),
         term,
         explanation,
+      }));
+      const sections = buildSections(baseTerms);
+      const sectionByNumber = new Map();
+      sections.forEach((section, sectionIndex) => {
+        section.numbers.forEach((number) => sectionByNumber.set(number, sectionIndex));
+      });
+      const terms = baseTerms.map((item) => ({
+        ...item,
+        unit: unit.unit,
+        unitTitle: unit.title,
+        sectionIndex: sectionByNumber.get(item.number) || 0,
       }));
       const definitions = seededShuffle(terms, 137 + unitIndex * 41).map((item, index) => ({
         card: cardLabel(index),
@@ -741,7 +981,7 @@
         explanation: item.explanation,
       }));
       const answerByNumber = new Map(definitions.map((item) => [item.number, item.card]));
-      return { ...unit, terms, definitions, answerByNumber, sections: buildSections(terms) };
+      return { ...unit, unitIndex, terms, definitions, answerByNumber, sections };
     });
 
     prepared.forEach((unit, index) => {
@@ -751,6 +991,8 @@
       button.innerHTML = `<strong>${unit.unit}</strong><span>${unit.title}</span>`;
       button.addEventListener("click", () => {
         activeUnit = index;
+        activity.mode = "link";
+        activity.quiz = null;
         timerKey = "";
         selectedTerm = null;
         selectedDefinition = null;
@@ -760,6 +1002,8 @@
     });
 
     resetButton.addEventListener("click", () => {
+      activity.mode = "link";
+      activity.quiz = null;
       state[activeUnit] = { matched: new Set(), attempts: 0, misses: 0, showKey: false, failedSections: new Set(), completedSections: new Set() };
       activeSection[activeUnit] = 0;
       timerKey = "";
@@ -782,17 +1026,56 @@
     });
 
     practiceMode.addEventListener("click", () => {
+      activity.mode = "link";
+      activity.quiz = null;
       challenge = false;
+      timerKey = "";
       render();
     });
 
     challengeMode.addEventListener("click", () => {
+      activity.mode = "link";
+      activity.quiz = null;
       challenge = true;
       state[activeUnit].showKey = false;
+      timerKey = "";
       render();
     });
 
+    wrongReviewButton.addEventListener("click", () => {
+      startQuiz("wrong", "Wrong Review", "Redo saved wrong concepts only. Submit to review answers and explanations.", wrongItems());
+    });
+
+    unitRandomButton.addEventListener("click", () => {
+      const unit = prepared[activeUnit];
+      startQuiz("unit", `${unit.unit} Random Practice`, "About 10 concepts are sampled from this unit, with every part represented.", pickUnitRandom(activeUnit));
+    });
+
+    allRandomButton.addEventListener("click", () => {
+      startQuiz("all", "All Units Random Practice", "36 concepts are sampled across the full course, with every unit represented. Time limit: 20 seconds per concept.", pickAllRandom());
+    });
+
+    answerPanel.addEventListener("click", (event) => {
+      const action = event.target.closest("[data-action]")?.dataset.action;
+      if (!action || activity.mode !== "quiz" || !activity.quiz) return;
+      if (action === "show-all") activity.quiz.showWrongOnly = false;
+      if (action === "show-wrong") activity.quiz.showWrongOnly = true;
+      if (action === "retry-wrong") startQuiz("wrong", "Wrong Review", "Redo saved wrong concepts only. Submit to review answers and explanations.", wrongItems());
+      if (action === "new-unit") {
+        const unit = prepared[activeUnit];
+        startQuiz("unit", `${unit.unit} Random Practice`, "About 10 concepts are sampled from this unit, with every part represented.", pickUnitRandom(activeUnit));
+      }
+      if (action === "new-all") startQuiz("all", "All Units Random Practice", "36 concepts are sampled across the full course, with every unit represented. Time limit: 20 seconds per concept.", pickAllRandom());
+      render();
+    });
+
+    updateWrongReviewButton();
+
     function render() {
+      if (activity.mode === "quiz") {
+        renderQuiz();
+        return;
+      }
       const unit = prepared[activeUnit];
       const current = state[activeUnit];
       const section = unit.sections[activeSection[activeUnit]] || unit.sections[0];
@@ -825,6 +1108,12 @@
       });
       practiceMode.classList.toggle("active", !challenge);
       challengeMode.classList.toggle("active", challenge);
+      wrongReviewButton.classList.remove("active");
+      unitRandomButton.classList.remove("active");
+      allRandomButton.classList.remove("active");
+      sectionTabs.hidden = false;
+      resetButton.hidden = false;
+      keyButton.hidden = false;
 
       sectionTabs.innerHTML = "";
       unit.sections.forEach((part, index) => {
@@ -918,6 +1207,198 @@
       window.requestAnimationFrame(drawConnections);
     }
 
+    function renderQuiz() {
+      const quiz = activity.quiz;
+      if (!quiz) return;
+      const answered = quiz.items.filter((item) => quiz.selectedByKey.has(item.key)).length;
+      const correct = quiz.submitted ? quiz.items.filter((item) => isQuizCorrect(item)).length : 0;
+      const completion = quiz.items.length ? Math.round((answered / quiz.items.length) * 100) : 0;
+      const currentTimerKey = quiz.id;
+
+      if (timerKey !== currentTimerKey) {
+        timerKey = currentTimerKey;
+        lastSpeedWarning = null;
+        timeRemaining = quiz.timeLimit;
+        timerExpired = false;
+        startCountdown();
+      }
+      if (quiz.submitted) stopCountdown();
+
+      Array.from(unitTabs.children).forEach((button, index) => {
+        button.classList.toggle("active", quiz.kind === "unit" && index === activeUnit);
+      });
+      practiceMode.classList.remove("active");
+      challengeMode.classList.remove("active");
+      wrongReviewButton.classList.toggle("active", quiz.kind === "wrong");
+      unitRandomButton.classList.toggle("active", quiz.kind === "unit");
+      allRandomButton.classList.toggle("active", quiz.kind === "all");
+      sectionTabs.hidden = true;
+      resetButton.hidden = true;
+      keyButton.hidden = true;
+      keyButton.disabled = true;
+
+      unitTitle.textContent = quiz.title;
+      unitNote.textContent = quiz.submitted
+        ? `${quiz.timedOut ? "Time is up. " : ""}Submitted. Review the answers and explanations below.`
+        : `${quiz.note} ${quiz.items.length} concepts · ${formatTime(quiz.timeLimit)} total · ${quizSecondsPerQuestion} seconds per concept.`;
+      scoreStat.innerHTML = quiz.submitted ? `${correct} / ${quiz.items.length}<span>correct</span>` : `${answered} / ${quiz.items.length}<span>answered</span>`;
+      updateTimerDisplay();
+      attemptStat.innerHTML = `${Math.round((correct / Math.max(quiz.items.length, 1)) * 100)}%<span>accuracy</span>`;
+      missStat.innerHTML = `${wrongCount()}<span>wrong bank</span>`;
+      progressFill.style.width = `${quiz.submitted ? Math.round((correct / Math.max(quiz.items.length, 1)) * 100) : completion}%`;
+      conceptCount.textContent = `${quiz.items.length - answered} left`;
+
+      const tones = buildToneMaps(activeUnit, 91, quiz.items);
+      termGrid.innerHTML = "";
+      quiz.items.forEach((item) => {
+        const chosenCard = quiz.selectedByKey.get(item.key);
+        const isSubmitted = quiz.submitted;
+        const isCorrect = isSubmitted && isQuizCorrect(item);
+        const isWrong = isSubmitted && !isCorrect;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `match-card term-card tone-${tones.termToneByNumber.get(item.number) ?? (Number(item.quizNumber) - 1) % 7}`;
+        button.dataset.key = item.key;
+        button.disabled = isSubmitted;
+        button.classList.toggle("selected", selectedQuizTerm === item.key);
+        button.classList.toggle("correct-review", isCorrect);
+        button.classList.toggle("wrong-review", isWrong);
+        button.innerHTML = `
+          <span class="meta">${item.unit} · #${item.number} · Q${item.quizNumber}</span>
+          <span class="term-name">${item.term}</span>
+          <span class="choice-tag">${chosenCard ? `Selected ${chosenCard}` : "No answer yet"}</span>
+        `;
+        button.addEventListener("click", () => selectQuizTerm(item.key));
+        termGrid.appendChild(button);
+      });
+
+      definitionGrid.innerHTML = "";
+      quiz.definitions.forEach((item, index) => {
+        const selectedFor = [...quiz.selectedByKey.entries()].find((entry) => entry[1] === item.card)?.[0];
+        const isSubmitted = quiz.submitted;
+        const isCorrectChoice = isSubmitted && selectedFor && selectedFor === item.key;
+        const isWrongChoice = isSubmitted && selectedFor && selectedFor !== item.key;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `match-card definition-card tone-${(index + 3) % 7}`;
+        button.dataset.card = item.card;
+        button.disabled = isSubmitted;
+        button.classList.toggle("selected", selectedFor || selectedDefinition === item.card);
+        button.classList.toggle("correct-review", Boolean(isCorrectChoice));
+        button.classList.toggle("wrong-review", Boolean(isWrongChoice));
+        button.innerHTML = `
+          <span class="meta">Card ${item.card}</span>
+          <span>${item.explanation}</span>
+          <span class="badge">${selectedFor ? "Selected" : "Pick explanation"}</span>
+        `;
+        button.addEventListener("click", () => selectQuizDefinition(item.card));
+        definitionGrid.appendChild(button);
+      });
+
+      answerPanel.hidden = false;
+      answerPanel.innerHTML = quiz.submitted ? quizReviewHtml(quiz) : `
+        <div class="review-actions">
+          <button class="soft-button active" type="button" id="submitQuizButton">Submit Practice</button>
+        </div>
+        <div class="result-summary">
+          <span>Match each key concept to one explanation. You can change any match before submitting.</span>
+          <span>Wrong answers are saved automatically after submission.</span>
+        </div>
+      `;
+      const submitButton = document.getElementById("submitQuizButton");
+      if (submitButton) submitButton.addEventListener("click", submitQuiz);
+
+      window.requestAnimationFrame(drawConnections);
+    }
+
+    function isQuizCorrect(item) {
+      const quiz = activity.quiz;
+      return quiz?.answerByKey.get(item.key) === quiz?.selectedByKey.get(item.key);
+    }
+
+    function selectQuizTerm(key) {
+      const quiz = activity.quiz;
+      if (!quiz || quiz.submitted || timerExpired) return;
+      selectedQuizTerm = selectedQuizTerm === key ? null : key;
+      render();
+    }
+
+    function selectQuizDefinition(card) {
+      const quiz = activity.quiz;
+      if (!quiz || quiz.submitted || timerExpired) return;
+      if (!selectedQuizTerm) {
+        showToast("Pick a concept first.", "error");
+        return;
+      }
+      for (const [key, selectedCard] of quiz.selectedByKey.entries()) {
+        if (selectedCard === card && key !== selectedQuizTerm) {
+          quiz.selectedByKey.delete(key);
+        }
+      }
+      quiz.selectedByKey.set(selectedQuizTerm, card);
+      selectedQuizTerm = null;
+      selectedDefinition = null;
+      render();
+    }
+
+    function submitQuiz(timedOut = false) {
+      const quiz = activity.quiz;
+      if (!quiz || quiz.submitted) return;
+      quiz.submitted = true;
+      quiz.timedOut = timedOut;
+      stopCountdown();
+      timerExpired = timedOut;
+      quiz.items.forEach((item) => {
+        if (isQuizCorrect(item)) {
+          clearWrong(item.key);
+        } else {
+          recordWrong(item);
+        }
+      });
+      pulse(timedOut ? "miss" : "hit", timedOut ? "Time is up!" : "Submitted!", timedOut ? "fail" : "super");
+      render();
+    }
+
+    function quizReviewHtml(quiz) {
+      const correct = quiz.items.filter((item) => isQuizCorrect(item)).length;
+      const wrongItemsForQuiz = quiz.items.filter((item) => !isQuizCorrect(item));
+      const reviewItems = quiz.showWrongOnly ? wrongItemsForQuiz : quiz.items;
+      const percent = Math.round((correct / Math.max(quiz.items.length, 1)) * 100);
+      const retryButton = wrongCount() ? `<button class="soft-button" type="button" data-action="retry-wrong">Redo Wrong Questions</button>` : "";
+      const nextButton = quiz.kind === "unit"
+        ? `<button class="soft-button" type="button" data-action="new-unit">New Unit Random</button>`
+        : `<button class="soft-button" type="button" data-action="new-all">New All Random</button>`;
+      return `
+        <h3>${quiz.title} Results</h3>
+        <div class="review-actions">
+          <button class="soft-button ${quiz.showWrongOnly ? "active" : ""}" type="button" data-action="show-wrong">Wrong Only</button>
+          <button class="soft-button ${quiz.showWrongOnly ? "" : "active"}" type="button" data-action="show-all">All Answers</button>
+          ${retryButton}
+          ${nextButton}
+        </div>
+        <div class="result-summary">
+          <span>Accuracy: ${percent}% · Correct: ${correct}/${quiz.items.length} · Wrong: ${wrongItemsForQuiz.length}</span>
+          <span>${wrongItemsForQuiz.length ? "Wrong concepts have been saved for review." : "No wrong answers left in this set."}</span>
+        </div>
+        <div class="explanation-list">
+          ${reviewItems.map((item) => explanationHtml(item, quiz)).join("") || "<div class=\"complete-card\">No wrong answers to review.<span>Excellent work.</span></div>"}
+        </div>
+      `;
+    }
+
+    function explanationHtml(item, quiz) {
+      const selected = quiz.selectedByKey.get(item.key);
+      const correctCard = quiz.answerByKey.get(item.key);
+      const ok = selected === correctCard;
+      return `
+        <div class="explanation-item ${ok ? "correct" : "wrong"}">
+          <strong>${item.unit} · ${item.term}</strong>
+          <span>Your answer: ${selected || "No answer"} · Correct card: ${correctCard}</span>
+          <span>Explanation: ${item.explanation}</span>
+        </div>
+      `;
+    }
+
     function selectTerm(number) {
       if (timerExpired) return;
       selectedTerm = selectedTerm === number ? null : number;
@@ -951,6 +1432,8 @@
         }
       } else {
         current.misses += 1;
+        const missedItem = unit.terms.find((item) => item.number === selectedTerm);
+        if (missedItem) recordWrong(missedItem);
         pulse("miss", "Try again!", "error");
       }
       selectedTerm = null;
@@ -996,7 +1479,11 @@
         if (timeRemaining === 0) {
           stopCountdown();
           if (!timerExpired) {
-            failCurrentPart();
+            if (activity.mode === "quiz") {
+              submitQuiz(true);
+            } else {
+              failCurrentPart();
+            }
           }
         }
       }, 1000);
@@ -1009,6 +1496,9 @@
       const sectionTerms = unit.terms.filter((item) => section.numbers.has(item.number));
       const sectionMatched = sectionTerms.filter((item) => current.matched.has(item.number)).length;
       if (sectionMatched === sectionTerms.length) return;
+      sectionTerms.forEach((item) => {
+        if (!current.matched.has(item.number)) recordWrong(item);
+      });
       timerExpired = true;
       current.failedSections.add(`${activeUnit}-${activeSection[activeUnit]}`);
       selectedTerm = null;
@@ -1121,6 +1611,10 @@
     }
 
     function drawConnections() {
+      if (activity.mode === "quiz") {
+        drawQuizConnections();
+        return;
+      }
       const unit = prepared[activeUnit];
       const current = state[activeUnit];
       const section = unit.sections[activeSection[activeUnit]] || unit.sections[0];
@@ -1139,6 +1633,31 @@
         const definitionEl = definitionGrid.querySelector(`[data-card="${CSS.escape(unit.answerByNumber.get(term.number))}"]`);
         if (!termEl || !definitionEl) return;
 
+        const start = anchor(termEl.getBoundingClientRect(), rect, "right");
+        const end = anchor(definitionEl.getBoundingClientRect(), rect, "left");
+        const bend = Math.max(44, Math.abs(end.x - start.x) * 0.42);
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", `M ${start.x} ${start.y} C ${start.x + bend} ${start.y}, ${end.x - bend} ${end.y}, ${end.x} ${end.y}`);
+        path.setAttribute("class", "connection-line");
+        connectionLayer.append(path, dot(start), dot(end));
+      });
+    }
+
+    function drawQuizConnections() {
+      const quiz = activity.quiz;
+      const rect = gameStage.getBoundingClientRect();
+      const width = Math.max(gameStage.clientWidth, gameStage.scrollWidth);
+      const height = Math.max(gameStage.clientHeight, gameStage.scrollHeight);
+      connectionLayer.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      connectionLayer.style.width = `${width}px`;
+      connectionLayer.style.height = `${height}px`;
+      connectionLayer.innerHTML = "";
+      if (!quiz) return;
+
+      quiz.selectedByKey.forEach((card, key) => {
+        const termEl = termGrid.querySelector(`[data-key="${CSS.escape(key)}"]`);
+        const definitionEl = definitionGrid.querySelector(`[data-card="${CSS.escape(card)}"]`);
+        if (!termEl || !definitionEl) return;
         const start = anchor(termEl.getBoundingClientRect(), rect, "right");
         const end = anchor(definitionEl.getBoundingClientRect(), rect, "left");
         const bend = Math.max(44, Math.abs(end.x - start.x) * 0.42);
